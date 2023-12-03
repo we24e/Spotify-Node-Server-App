@@ -1,8 +1,8 @@
 const model = require('./model.js');
 
 const findAllLikes = () => model.find();
-const createUserLike = (userId, itemId, itemType, itemTitle) =>
-    model.create({ user: userId, itemId, itemType, itemTitle });
+const createUserLike = (userId, itemId, itemType, itemTitle, detail) =>
+    model.create({ user: userId, itemId, itemType, itemTitle, detail });
 const deleteUserLike = (userId, itemId) =>
     model.deleteOne({ user: userId, itemId });
 const findUsersThatLikeItem = (itemId) =>
