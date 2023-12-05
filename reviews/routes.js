@@ -2,10 +2,10 @@ const dao = require('./dao.js');
 
 function ReviewsRoutes(app) {
     app.post('/api/reviews', async (req, res) => {
-        const { detail, reviewText, userId, itemType, itemID } = req.body;
+        const { reviewText, userId, itemType, itemID } = req.body;
 
         try {
-            const review = await dao.createReview(detail, reviewText, userId, itemType, itemID);
+            const review = await dao.createReview(reviewText, userId, itemType, itemID);
             res.status(201).json(review);
         } catch (error) {
             res.status(500).json({ error: error.message });
@@ -33,11 +33,29 @@ function ReviewsRoutes(app) {
             res.status(500).json({ error: error.message });
         }
     });
+
     app.get('/api/users/:userId/reviews', async (req, res) => {
         const userId = req.params.userId;
 
         try {
             const reviews = await dao.findReviewsByUser(userId);
+            res.json(reviews);
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    });
+    app.get('/api/reviews', async (req, res) => {
+        try {
+            const reviews = await dao.getAllReviews();
+            res.json(reviews);
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    });
+    
+    app.get('/api/reviews/latest', async (req, res) => {
+        try {
+            const reviews = await dao.getLatest5Reviews();
             res.json(reviews);
         } catch (error) {
             res.status(500).json({ error: error.message });
