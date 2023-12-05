@@ -12,16 +12,16 @@ function LikesRoutes(app) {
 
   const createUserLike = async (req, res) => {
     const userId = req.params.userId;
-    const { itemId, itemType, itemTitle, detail } = req.body;
-
+    const { itemId, itemType } = req.body;
+  
     try {
-        const like = await dao.createUserLike(userId, itemId, itemType, itemTitle, detail);
-        res.status(201).json(like);
+      const like = await dao.createUserLike(userId, itemId, itemType);
+      res.status(201).json(like);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+      res.status(500).json({ error: error.message });
     }
-};
-
+  };
+  
 
   const deleteUserLike = async (req, res) => {
     const userId = req.params.userId;
