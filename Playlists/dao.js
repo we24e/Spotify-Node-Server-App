@@ -25,6 +25,13 @@ const addTrackToPlaylist = async (playlistId, trackId) => {
         { new: true }
     );
 };
+const deleteTrackFromPlaylist = async (playlistId, trackId) => {
+    return model.findByIdAndUpdate(
+        playlistId,
+        { $pull: { trackIDs: trackId } },
+        { new: true }
+    );
+};
 module.exports = {
     createPlaylist,
     deletePlaylist,
@@ -32,5 +39,6 @@ module.exports = {
     findAllPlaylists,
     updatePlaylist,
     findPlaylistById,
-    addTrackToPlaylist
+    addTrackToPlaylist,
+    deleteTrackFromPlaylist
 };
