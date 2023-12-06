@@ -11,6 +11,7 @@ const userSchema = new mongoose.Schema({
         enum: ["ARTIST", "ADMIN", "USER"],
         default: "USER"
     },
+    artistID: { type: String, unique: true },
     followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
 },

@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const LikesRoutes = require('./likes/routes.js');
 const ReviewsRoutes = require('./reviews/routes.js');
+const PlaylistRoutes = require('./Playlists/routes.js');
 
 const app = express();
 app.use(express.json()); 
@@ -13,6 +14,7 @@ app.use(cors());
 UserRoutes(app);
 LikesRoutes(app);
 ReviewsRoutes(app);
+PlaylistRoutes(app);
 mongoose.connect("mongodb://127.0.0.1:27017/Project");
 
 const authenticateToken = (req, res, next) => {
