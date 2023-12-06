@@ -70,11 +70,25 @@ function PlaylistRoutes(app) {
     app.put('/api/playlists/:playlistId/add-track', async (req, res) => {
         const { playlistId } = req.params;
         const { trackId } = req.body;
-    
+
         try {
             const updatedPlaylist = await dao.addTrackToPlaylist(playlistId, trackId);
             if (!updatedPlaylist) {
                 return res.status(404).send('Playlist not found');
+            }
+            res.json(updatedPlaylist);
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    });
+    app.put('/api/playlists/:playlistId/delete-track', async (req, res) => {
+        const { playlistId } = req.params;
+        const { trackId } = req.body;
+
+        try {
+            const updatedPlaylist = await dao.deleteTrackFromPlaylist(playlistId, trackId);
+            if (!updatedPlaylist) {
+                return res.status(404).send('Playlist or track not found');
             }
             res.json(updatedPlaylist);
         } catch (error) {
