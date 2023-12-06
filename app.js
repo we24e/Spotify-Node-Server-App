@@ -7,10 +7,34 @@ const cors = require('cors');
 const LikesRoutes = require('./likes/routes.js');
 const ReviewsRoutes = require('./reviews/routes.js');
 const PlaylistRoutes = require('./Playlists/routes.js');
+const session = require("express-session");
+require('dotenv').config();
 
 const app = express();
-app.use(express.json()); 
-app.use(cors()); 
+app.use(express.json());
+app.use(
+    cors({
+        credentials: true,
+        origin: process.env.FRONTEND_URL
+
+    })
+);
+
+const sessionOptions = {
+  secret: "any string",
+  resave: false,
+  saveUninitialized: false,
+};
+if (process.env.NODE_ENV !== "development") {
+  sessionOptions.proxy = true;
+  sessionOptions.cookie = {
+    sameSite: "none",
+    secure: true,
+  };
+}
+app.use(session(sessionOptions));
+
+
 UserRoutes(app);
 LikesRoutes(app);
 ReviewsRoutes(app);
@@ -30,7 +54,7 @@ const authenticateToken = (req, res, next) => {
 };
 
 app.post('/getAccessToken', async (req, res) => {
-    const client_id = 'bed8cb6c488b4a2cbbd392b2e28e5e9b'; 
+    const client_id = 'bed8cb6c488b4a2cbbd392b2e28e5e9b';
     const client_secret = '46223c275dff4cb1885b2adb69a3e0db';
     const tokenUrl = 'https://accounts.spotify.com/api/token';
 

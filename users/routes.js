@@ -24,7 +24,7 @@ function UserRoutes(app) {
     const updateUser = async (req, res) => {
         const { userId } = req.params;
         const status = await dao.updateUser(userId, req.body);
-        currentUser = await dao.findUserById(userId);
+        req.session['currentUser'] = await dao.findUserById(userId);
         res.json(status);
     };
 
@@ -40,17 +40,17 @@ function UserRoutes(app) {
             }
 
             const currentUser = await dao.createUser(req.body);
-            res.json(currentUser);
+            req.session['currentUser'] = currentUser;
         } catch (err) {
             console.error(err);
             res.status(500).json({ message: "Internal Server Error" });
         }
     };
 
-
     const signin = async (req, res) => {
         const { username, password } = req.body;
-        currentUser = await dao.findUserByCredentials(username, password);
+        const currentUser = await dao.findUserByCredentials(username, password);
+        req.session['currentUser'] = currentUser;
         if (!currentUser) {
             return res.status(401).json({ message: "Invalid username or password" });
         }
@@ -58,12 +58,13 @@ function UserRoutes(app) {
     };
 
     const signout = (req, res) => {
+        req.session.destroy();
         currentUser = null;
         res.json(200);
     };
 
     const profile = async (req, res) => {
-        res.json(currentUser);
+        res.json(req.session['currentUser']);
     };
 
     const getFollowers = async (req, res) => {
@@ -77,13 +78,13 @@ function UserRoutes(app) {
     };
 
     app.post("/api/users/follow", async (req, res) => {
-        if (!currentUser) {
+        if (!req.session['currentUser']) {
             return res.status(401).json({ message: "User not authenticated" });
         }
 
         const userIdToFollow = req.body.userId;
         try {
-            await dao.followUser(userIdToFollow, currentUser._id);
+            await dao.followUser(userIdToFollow, req.session['currentUser']._id);
             res.json({ message: "Followed successfully" });
         } catch (err) {
             console.error(err);
@@ -92,13 +93,13 @@ function UserRoutes(app) {
     });
 
     app.post("/api/users/unfollow", async (req, res) => {
-        if (!currentUser) {
+        if (!req.session['currentUser']) {
             return res.status(401).json({ message: "User not authenticated" });
         }
 
         const userIdToUnfollow = req.body.userId;
         try {
-            await dao.unfollowUser(userIdToUnfollow, currentUser._id);
+            await dao.unfollowUser(userIdToUnfollow, req.session['currentUser']._id);
             res.json({ message: "Unfollowed successfully" });
         } catch (err) {
             console.error(err);
@@ -106,14 +107,14 @@ function UserRoutes(app) {
         }
     });
     app.get("/api/users/:userId/is-followed-by-current-user", async (req, res) => {
-        if (!currentUser) {
+        if (!req.session['currentUser']) {
             return res.status(401).json({ message: "User not authenticated" });
         }
 
         const userIdToCheck = req.params.userId;
         try {
             const user = await dao.findUserById(userIdToCheck);
-            const isFollowing = user.followers.includes(currentUser._id);
+            const isFollowing = user.followers.includes(req.session['currentUser']._id);
             res.json({ isFollowing });
         } catch (err) {
             console.error(err);
