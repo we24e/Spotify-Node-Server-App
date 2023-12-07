@@ -33,19 +33,21 @@ function UserRoutes(app) {
             if (!req.body.username || !req.body.password) {
                 return res.status(400).json({ message: "Missing username or password" });
             }
-
+    
             const user = await dao.findUserByUsername(req.body.username);
             if (user) {
                 return res.status(400).json({ message: "Username already taken" });
             }
-
+    
             const currentUser = await dao.createUser(req.body);
             req.session['currentUser'] = currentUser;
+            res.status(200).json({ message: "User created successfully", user: currentUser });
         } catch (err) {
             console.error(err);
             res.status(500).json({ message: "Internal Server Error" });
         }
     };
+    
 
     const signin = async (req, res) => {
         const { username, password } = req.body;
