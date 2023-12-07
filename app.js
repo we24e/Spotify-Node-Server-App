@@ -8,6 +8,7 @@ const LikesRoutes = require('./likes/routes.js');
 const ReviewsRoutes = require('./reviews/routes.js');
 const PlaylistRoutes = require('./Playlists/routes.js');
 const session = require("express-session");
+const AlbumRoutes = require('./Album/routes.js');
 require('dotenv').config();
 
 const app = express();
@@ -39,6 +40,8 @@ UserRoutes(app);
 LikesRoutes(app);
 ReviewsRoutes(app);
 PlaylistRoutes(app);
+AlbumRoutes(app);
+
 mongoose.connect("mongodb://127.0.0.1:27017/Project");
 
 const authenticateToken = (req, res, next) => {
