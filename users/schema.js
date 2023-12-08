@@ -11,7 +11,14 @@ const userSchema = new mongoose.Schema({
         enum: ["ARTIST", "ADMIN", "USER"],
         default: "USER"
     },
-    artistID: { type: String, unique: true },
+    timezone: {
+        type: String,
+        enum: ['EST', 'CST', 'MST', 'PST', 'GMT'],
+    },
+    artistID: {
+        type: String,
+        unique: true,
+    },
     followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
 },
