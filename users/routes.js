@@ -2,11 +2,26 @@ const dao = require('./dao.js');
 
 let currentUser = null;
 function UserRoutes(app) {
-    const createUser = async (req, res) => {
-        const user = await dao.createUser(req.body);
-        res.json(user);
-    }
 
+    const createUser = async (req, res) => {
+        try {
+            if (!req.body.username || !req.body.password) {
+                return res.status(400).json({ message: "Missing username or password" });
+            }
+    
+            const userExists = await dao.findUserByUsername(req.body.username);
+            if (userExists) {
+                return res.status(400).json({ message: "Username already taken" });
+            }
+    
+            const newUser = await dao.createUser(req.body);
+            res.status(200).json({ message: "User created successfully", user: newUser });
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ message: "Internal Server Error" });
+        }
+    }
+    
     const deleteUser = async (req, res) => {
         const status = await dao.deleteUser(req.params.userId);
         res.json(status);
@@ -23,11 +38,30 @@ function UserRoutes(app) {
 
     const updateUser = async (req, res) => {
         const { userId } = req.params;
-        const status = await dao.updateUser(userId, req.body);
-        req.session['currentUser'] = await dao.findUserById(userId);
-        res.json(status);
+        try {
+            if ('username' in req.body && !req.body.username) {
+                return res.status(400).json({ message: "Username cannot be empty" });
+            }
+            if ('password' in req.body && !req.body.password) {
+                return res.status(400).json({ message: "Password cannot be empty" });
+            }
+    
+            if (req.body.username) {
+                const existingUser = await dao.findUserByUsername(req.body.username);
+                if (existingUser && existingUser._id.toString() !== userId) {
+                    return res.status(400).json({ message: "Username already taken" });
+                }
+            }
+    
+            const status = await dao.updateUser(userId, req.body);
+            req.session['currentUser'] = await dao.findUserById(userId);
+            res.status(200).json({ message: "User updated successfully", status });
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ message: "Internal Server Error" });
+        }
     };
-
+    
     const signup = async (req, res) => {
         try {
             if (!req.body.username || !req.body.password) {

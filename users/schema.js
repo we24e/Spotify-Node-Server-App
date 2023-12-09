@@ -17,7 +17,6 @@ const userSchema = new mongoose.Schema({
     },
     artistID: {
         type: String,
-        unique: true,
     },
     followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
