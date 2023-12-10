@@ -42,7 +42,8 @@ ReviewsRoutes(app);
 PlaylistRoutes(app);
 AlbumRoutes(app);
 
-mongoose.connect("mongodb://127.0.0.1:27017/Project");
+const CONNECTION_STRING = process.env.DB_CONNECTION_STRING || 'mongodb://127.0.0.1:27017/Project';
+mongoose.connect(CONNECTION_STRING);
 
 const authenticateToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
@@ -80,6 +81,6 @@ app.post('/getAccessToken', async (req, res) => {
     }
 });
 
-app.listen(4000, () => {
-    console.log('Server running on http://localhost:4000');
+app.listen(process.env.PORT || 4000, () => {
+    console.log(`Server running on http://localhost:${process.env.PORT || 4000}`);
 });
